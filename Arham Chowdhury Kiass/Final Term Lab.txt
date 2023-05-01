@@ -1,0 +1,65 @@
+#*Final TErm Lab*
+
+#dataset input
+migraine<- read.csv("C:/data.csv",header = TRUE,sep = ",")
+migraine
+
+str(migraine)
+
+#scalling data
+scale(migraine_new)
+
+#remove Type
+migraine_new <- migraine[, -24]
+migraine_new
+
+#Finding zero
+colSums(migraine_new == 0)
+
+#remove zero
+constant_cols <- which(colSums(migraine == 0) == nrow(migraine))
+migraine_new <- migraine[,-constant_cols]
+
+migraine_new
+
+#intalling packages
+install.packages("ClusterR")
+install.packages("cluster")
+install.packages("factoextra")
+
+
+# Loading packages
+library(ClusterR)
+library(cluster)
+library(factoextra)
+fviz_cluster(km, data = migraine_new)
+
+fviz_nbclust(migraine_new, kmeans, method = "wss")
+
+
+#K-means Clustering Algorithm 
+
+km <- kmeans(migraine_new, centers = 6, nstart = 30)
+km
+
+
+#Visualize the output of K-means Clustering Algorithm
+
+k_clusters <- cbind(migraine_new, cluster = km$cluster)
+k_clusters
+
+
+#Visualize the output of K-means Clustering Algorithm
+library(dplyr)
+migraine_new <- select_if(migraine_new, function(x) !all(x == 0))
+fviz_cluster(km, data = migraine_new)
+
+#find means of each cluster
+
+aggregate(migraine_new, by=list(cluster=km$cluster), mean)
+#hierarcical clustering
+hc <- hclust(dist(migraine_new))
+plot(hc)
+
+
+
